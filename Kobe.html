@@ -539,8 +539,9 @@ shot_id has 30697  unique data entries over: 30697
 
 </div>
 <p>
-Based on what we've seen
-
+Based on what we've seen of the columns and their data types and values, there are a few columns we can remove
+in order to simplify the dataset. 
+</p>
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -725,20 +726,15 @@ Based on what we've seen
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[403]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Let&#39;s convert game_date to a datetime object</span>
-<span class="n">shot_data</span><span class="p">[</span><span class="s2">&quot;game_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">shot_data</span><span class="p">[</span><span class="s2">&quot;game_date&quot;</span><span class="p">])</span>
-</pre></div>
 
-</div>
-</div>
-</div>
 
-</div>
+
+
+<p>
+For now, I'm going to divide the data into whether the shot was recorded or not. This is necessary since it does us no good to examine
+the data for which the outcome is uncertain. 
+</p>
+
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[404]:</div>
@@ -756,12 +752,18 @@ Based on what we've seen
 </div>
 
 </div>
+<p>
+For the initial data analysis I wanted to examine how time would have an effect on Kobe's chances of making a shot.
+Time should have an influence in a broad sense (how late or early in Kobe's career) and in the small sense (seconds left in the game)
+Working with data involving time is much easier when it is a datetime object so that will be my first step.
+</p>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[405]:</div>
+<div class="prompt input_prompt">In&nbsp;[403]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Let&#39;s see how Kobe shot over time</span>
+<div class=" highlight hl-ipython3"><pre><span></span>
+<span class="n">shot_data</span><span class="p">[</span><span class="s2">&quot;game_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">shot_data</span><span class="p">[</span><span class="s2">&quot;game_date&quot;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -769,6 +771,15 @@ Based on what we've seen
 </div>
 
 </div>
+
+<p>
+First I'll plot Kobe's shooting percentage over the many seasons he was in the NBA. Looking at it, it is
+obvious that Kobe was up and down through the seasons, but there is a definite trailing off when
+we look at his later seasons.
+</p>
+
+
+
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[406]:</div>
@@ -956,20 +967,13 @@ AAYoUQAAA5QoAIABShQAwAAlCgBggBIFADBAiQIAGPA/AaB/UtXCFu8iAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[407]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#It&#39;s clear that Kobe&#39;s shooting has fluctuated over the season. Let&#39;s see within a season what it looks like. </span>
-<span class="c1">#Just for the sample lets look at the year 2000</span>
-</pre></div>
+<p>
+Kobe's shooting changes on a season to season basis. Let's see what happens to his shooting within a season
+I picked the year 2000 for kicks.
+</p>
 
-</div>
-</div>
-</div>
 
-</div>
+
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[408]:</div>
@@ -1476,20 +1480,14 @@ RU5ErkJggg==
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[410]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#As we can see from the data, there are some nights where Kobe has a really hot hand and others when does poorly</span>
-<span class="c1">#This brings up an interesting thought though, does Kobe consistently shoot a certain way on a monthly basis? </span>
-</pre></div>
 
 </div>
-</div>
-</div>
 
-</div>
+<p>
+This is interesting, because Kobe's shot percentage varies dramatically throughout the year. On a game to game 
+basis his shot percentage can fluctuate wildly
+</p>
+
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[411]:</div>
