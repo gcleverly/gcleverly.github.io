@@ -29,7 +29,7 @@ this data is missing. The objective of this project is to try to predict the pro
 </p>
 
 <p>
-  The first thing we want to do is import the modules. Notice, because of the size of the data file, I started off only reading 500 lines
+  First things first, I'll import the modules
 </p>
 
 <div class="cell border-box-sizing code_cell rendered">
@@ -88,6 +88,10 @@ this data is missing. The objective of this project is to try to predict the pro
 </div>
 
 </div>
+
+<p>
+Here we read in the data file. For this project it's not too big at 6.1 MB
+</p>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[398]:</div>
@@ -113,6 +117,10 @@ this data is missing. The objective of this project is to try to predict the pro
 </div>
 </div>
 
+<p>
+Im using .describe() and .head() to get an initial look at the data. Turns out .describe() isn't very useful for gaining any
+information from this dataset. However, .head() allows us to see the kind of data we'll be working with.
+</p>
 <div class="output_wrapper">
 <div class="output">
 
@@ -469,12 +477,18 @@ this data is missing. The objective of this project is to try to predict the pro
 </div>
 
 </div>
+
+<p>
+I wanted to get a feel for how many columns had useful data. There are other ways of doing this, but I liked the readability
+of the following output
+</p>
+
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[401]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Try and find which columns are necessary</span>
+
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
     <span class="n">unique_count</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
