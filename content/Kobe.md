@@ -1,4 +1,4 @@
-Title: Kobe Shot Predictor
+Title: Kobe shot predictor
 Date: 2016-08-15
 Category: Machine Learning
 
@@ -600,7 +600,7 @@ data_complete[["shot_made_flag","season"]].groupby("season")["shot_made_flag"].m
 ```
 
 
-![png](Kobe_files/Kobe_10_0.png)
+![png](images/Kobe_10_0.png)
 
 
 
@@ -780,7 +780,7 @@ year_2000[["shot_made_flag","game_date"]].groupby("game_date")["shot_made_flag"]
 ```
 
 
-![png](Kobe_files/Kobe_13_0.png)
+![png](images/Kobe_13_0.png)
 
 
 
@@ -808,7 +808,7 @@ year_2000[["shot_made_flag","day_of_week"]].groupby("day_of_week")["shot_made_fl
 ```
 
 
-![png](Kobe_files/Kobe_16_0.png)
+![png](images/Kobe_16_0.png)
 
 
 
@@ -830,7 +830,7 @@ year_2000[["shot_made_flag","game_month"]].groupby("game_month")["shot_made_flag
 ```
 
 
-![png](Kobe_files/Kobe_18_0.png)
+![png](images/Kobe_18_0.png)
 
 
 
@@ -852,7 +852,7 @@ data_complete[["shot_made_flag","game_month"]].groupby("game_month")["shot_made_
 ```
 
 
-![png](Kobe_files/Kobe_21_0.png)
+![png](images/Kobe_21_0.png)
 
 
 
@@ -861,7 +861,7 @@ data_complete[["shot_made_flag","game_day"]].groupby("game_day")["shot_made_flag
 ```
 
 
-![png](Kobe_files/Kobe_22_0.png)
+![png](images/Kobe_22_0.png)
 
 
 
@@ -905,15 +905,15 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_26_0.png)
+![png](images/Kobe_26_0.png)
 
 
 
-![png](Kobe_files/Kobe_26_1.png)
+![png](images/Kobe_26_1.png)
 
 
 
-![png](Kobe_files/Kobe_26_2.png)
+![png](images/Kobe_26_2.png)
 
 
 
@@ -932,7 +932,7 @@ data_complete[["shot_made_flag","opponent"]].groupby("opponent")["shot_made_flag
 ```
 
 
-![png](Kobe_files/Kobe_29_0.png)
+![png](images/Kobe_29_0.png)
 
 
 
@@ -952,7 +952,7 @@ data_complete[["shot_made_flag","away"]].groupby("away")["shot_made_flag"].mean(
 ```
 
 
-![png](Kobe_files/Kobe_32_0.png)
+![png](images/Kobe_32_0.png)
 
 
 
@@ -979,7 +979,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_35_0.png)
+![png](images/Kobe_35_0.png)
 
 
 
@@ -994,7 +994,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_36_0.png)
+![png](images/Kobe_36_0.png)
 
 
 
@@ -1017,7 +1017,7 @@ plt.ylim(-5,75)
 
 
 
-![png](Kobe_files/Kobe_37_1.png)
+![png](images/Kobe_37_1.png)
 
 
 
@@ -1034,7 +1034,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_38_0.png)
+![png](images/Kobe_38_0.png)
 
 
 
@@ -1068,7 +1068,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_41_0.png)
+![png](images/Kobe_41_0.png)
 
 
 
@@ -1079,7 +1079,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_42_0.png)
+![png](images/Kobe_42_0.png)
 
 
 
@@ -1096,7 +1096,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_43_0.png)
+![png](images/Kobe_43_0.png)
 
 
 
@@ -1114,7 +1114,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_44_0.png)
+![png](images/Kobe_44_0.png)
 
 
 
@@ -1128,7 +1128,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_45_0.png)
+![png](images/Kobe_45_0.png)
 
 
 
@@ -1214,7 +1214,7 @@ plt.show()
 ```
 
 
-![png](Kobe_files/Kobe_47_0.png)
+![png](images/Kobe_47_0.png)
 
 
 
