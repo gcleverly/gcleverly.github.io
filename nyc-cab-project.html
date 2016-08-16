@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>NYC Cab Project</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="A Pelican Blog Atom Feed" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">A Pelican Blog </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/machine-learning.html">Machine Learning</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/nyc-cab-project.html" rel="bookmark"
+           title="Permalink to NYC Cab Project">NYC Cab Project</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2016-08-15T00:00:00+00:00">
+                Published: Mon 15 August 2016
+        </abbr>
+
+<p>In <a href="/category/machine-learning.html">Machine Learning</a>.</p>
+
+</footer><!-- /.post-info -->      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PatchCollection</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.basemap</span> <span class="kn">import</span> <span class="n">Basemap</span>
+<span class="kn">import</span> <span class="nn">shapefile</span>
+<span class="kn">import</span> <span class="nn">fiona</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MultiPoint</span><span class="p">,</span> <span class="n">MultiPolygon</span>
+<span class="kn">from</span> <span class="nn">shapely.prepared</span> <span class="kn">import</span> <span class="n">prep</span>
+<span class="kn">from</span> <span class="nn">descartes</span> <span class="kn">import</span> <span class="n">PolygonPatch</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="n">FILE</span> <span class="o">=</span> <span class="s2">&quot;/Users/GCleverly/Documents/GA-DS-15/yellow_tripdata_2014-01.csv&quot;</span>
+
+<span class="n">cab_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">FILE</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">cab_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">total_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; total_amount&#39;</span><span class="p">])</span>
+<span class="n">cab_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Index([&#39;vendor_id&#39;, &#39; pickup_datetime&#39;, &#39; dropoff_datetime&#39;,
+       &#39; passenger_count&#39;, &#39; trip_distance&#39;, &#39; pickup_longitude&#39;,
+       &#39; pickup_latitude&#39;, &#39; rate_code&#39;, &#39; store_and_fwd_flag&#39;,
+       &#39; dropoff_longitude&#39;, &#39; dropoff_latitude&#39;, &#39; payment_type&#39;,
+       &#39; fare_amount&#39;, &#39; surcharge&#39;, &#39; mta_tax&#39;, &#39; tip_amount&#39;,
+       &#39; tolls_amount&#39;, &#39; total_amount&#39;],
+      dtype=&#39;object&#39;)
+</pre></div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>vendor_id</th>
+      <th>pickup_datetime</th>
+      <th>dropoff_datetime</th>
+      <th>passenger_count</th>
+      <th>trip_distance</th>
+      <th>pickup_longitude</th>
+      <th>pickup_latitude</th>
+      <th>rate_code</th>
+      <th>store_and_fwd_flag</th>
+      <th>dropoff_longitude</th>
+      <th>dropoff_latitude</th>
+      <th>payment_type</th>
+      <th>fare_amount</th>
+      <th>surcharge</th>
+      <th>mta_tax</th>
+      <th>tip_amount</th>
+      <th>tolls_amount</th>
+      <th>total_amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CMT</td>
+      <td>2014-01-09 20:45:25</td>
+      <td>2014-01-09 20:52:31</td>
+      <td>1</td>
+      <td>0.7</td>
+      <td>-73.994770</td>
+      <td>40.736828</td>
+      <td>1</td>
+      <td>N</td>
+      <td>-73.982227</td>
+      <td>40.731790</td>
+      <td>CRD</td>
+      <td>6.5</td>
+      <td>0.5</td>
+      <td>0.5</td>
+      <td>1.40</td>
+      <td>0</td>
+      <td>8.90</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CMT</td>
+      <td>2014-01-09 20:46:12</td>
+      <td>2014-01-09 20:55:12</td>
+      <td>1</td>
+      <td>1.4</td>
+      <td>-73.982392</td>
+      <td>40.773382</td>
+      <td>1</td>
+      <td>N</td>
+      <td>-73.960449</td>
+      <td>40.763995</td>
+      <td>CRD</td>
+      <td>8.5</td>
+      <td>0.5</td>
+      <td>0.5</td>
+      <td>1.90</td>
+      <td>0</td>
+      <td>11.40</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CMT</td>
+      <td>2014-01-09 20:44:47</td>
+      <td>2014-01-09 20:59:46</td>
+      <td>2</td>
+      <td>2.3</td>
+      <td>-73.988570</td>
+      <td>40.739406</td>
+      <td>1</td>
+      <td>N</td>
+      <td>-73.986626</td>
+      <td>40.765217</td>
+      <td>CRD</td>
+      <td>11.5</td>
+      <td>0.5</td>
+      <td>0.5</td>
+      <td>1.50</td>
+      <td>0</td>
+      <td>14.00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CMT</td>
+      <td>2014-01-09 20:44:57</td>
+      <td>2014-01-09 20:51:40</td>
+      <td>1</td>
+      <td>1.7</td>
+      <td>-73.960213</td>
+      <td>40.770464</td>
+      <td>1</td>
+      <td>N</td>
+      <td>-73.979863</td>
+      <td>40.777050</td>
+      <td>CRD</td>
+      <td>7.5</td>
+      <td>0.5</td>
+      <td>0.5</td>
+      <td>1.70</td>
+      <td>0</td>
+      <td>10.20</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CMT</td>
+      <td>2014-01-09 20:47:09</td>
+      <td>2014-01-09 20:53:32</td>
+      <td>1</td>
+      <td>0.9</td>
+      <td>-73.995371</td>
+      <td>40.717248</td>
+      <td>1</td>
+      <td>N</td>
+      <td>-73.984367</td>
+      <td>40.720524</td>
+      <td>CRD</td>
+      <td>6.0</td>
+      <td>0.5</td>
+      <td>0.5</td>
+      <td>1.75</td>
+      <td>0</td>
+      <td>8.75</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="c1">#Look at Max/Min/Mean of some columns</span>
+<span class="n">price_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; trip_distance&#39;</span><span class="p">,</span><span class="s1">&#39; fare_amount&#39;</span><span class="p">,</span> <span class="s1">&#39; surcharge&#39;</span><span class="p">,</span> <span class="s1">&#39; tip_amount&#39;</span><span class="p">,</span><span class="s1">&#39; tolls_amount&#39;</span><span class="p">,</span> <span class="s1">&#39; total_amount&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">price</span> <span class="ow">in</span> <span class="n">price_columns</span><span class="p">:</span>
+
+    <span class="n">num_zero</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">max_col</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="n">price</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The max&quot;</span><span class="p">,</span><span class="n">price</span><span class="p">,</span><span class="s2">&quot;is: &quot;</span><span class="p">,</span><span class="n">max_col</span><span class="p">)</span>
+    <span class="n">min_col</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="n">price</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The min&quot;</span><span class="p">,</span><span class="n">price</span><span class="p">,</span><span class="s2">&quot;is: &quot;</span><span class="p">,</span><span class="n">min_col</span><span class="p">)</span>
+    <span class="n">mean_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="n">price</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The mean&quot;</span><span class="p">,</span><span class="n">price</span><span class="p">,</span><span class="s2">&quot;is: &quot;</span><span class="p">,</span><span class="n">mean_col</span><span class="p">)</span>
+    <span class="n">num_nonzero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="n">price</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;The number of non-zero data points is&quot;</span><span class="p">,</span> <span class="n">num_nonzero</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1">#Check which columns are useful to your analysis</span>
+<span class="n">test_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;vendor_id&#39;</span><span class="p">,</span><span class="s1">&#39; mta_tax&#39;</span><span class="p">,</span><span class="s1">&#39; rate_code&#39;</span><span class="p">,</span><span class="s1">&#39; store_and_fwd_flag&#39;</span><span class="p">,</span> <span class="s1">&#39; payment_type&#39;</span><span class="p">]</span>
+
+<span class="n">data_columns</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[</span><span class="n">test_columns</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">data_test</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[</span><span class="n">test_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">column_testing</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_test</span><span class="p">:</span>
+    <span class="n">column_testing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_test</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>    
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Theses are the unique values in the data&quot;</span><span class="p">,</span> <span class="n">column_testing</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1">#How many 0 tips were given</span>
+<span class="n">tip_zero</span> <span class="o">=</span> <span class="p">[</span><span class="n">tip</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">tip</span> <span class="ow">in</span> <span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; tip_amount&#39;</span><span class="p">]]</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;The number of times no tip was given:&quot;</span> <span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">tip_zero</span><span class="p">))</span>
+
+<span class="n">cab_data</span> <span class="o">=</span> <span class="n">cab_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">test_columns</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>The max  trip_distance is:  24.7
+The min  trip_distance is:  0.0
+The mean  trip_distance is:  3.0016
+The number of non-zero data points is 496
+
+
+The max  fare_amount is:  90.0
+The min  fare_amount is:  2.5
+The mean  fare_amount is:  12.66
+The number of non-zero data points is 500
+
+
+The max  surcharge is:  1.0
+The min  surcharge is:  0.0
+The mean  surcharge is:  0.69
+The number of non-zero data points is 483
+
+
+The max  tip_amount is:  32.0
+The min  tip_amount is:  0.0
+The mean  tip_amount is:  2.49288
+The number of non-zero data points is 485
+
+
+The max  tolls_amount is:  9.0
+The min  tolls_amount is:  0.0
+The mean  tolls_amount is:  0.29184
+The number of non-zero data points is 26
+
+
+The max  total_amount is:  118.8
+The min  total_amount is:  4.0
+The mean  total_amount is:  16.63172
+The number of non-zero data points is 500
+
+
+----------------------------------------------------------------------------------------------------
+Theses are the unique values in the data [array([&#39;CMT&#39;], dtype=object), array([ 0.5,  0. ]), array([1, 2, 5]), array([&#39;N&#39;, &#39;Y&#39;], dtype=object), array([&#39;CRD&#39;], dtype=object)]
+----------------------------------------------------------------------------------------------------
+The number of times no tip was given: 500
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">cab_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="c1">#clean_pickup.hist(figsize=(15,15))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Histogram of Trip Distances&quot;</span><span class="p">)</span>
+<span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; trip_distance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; passenger_count&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Histogram of Number of Passangers&quot;</span><span class="p">)</span>
+<span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; passenger_count&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; tolls_amount&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; tip_amount&#39;</span><span class="p">],</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; trip_distance&#39;</span><span class="p">]);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Graph of tip vs trip distance&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Tip Amount&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Distance&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Index([&#39; pickup_datetime&#39;, &#39; dropoff_datetime&#39;, &#39; passenger_count&#39;,
+       &#39; trip_distance&#39;, &#39; pickup_longitude&#39;, &#39; pickup_latitude&#39;,
+       &#39; dropoff_longitude&#39;, &#39; dropoff_latitude&#39;, &#39; fare_amount&#39;, &#39; surcharge&#39;,
+       &#39; tip_amount&#39;, &#39; tolls_amount&#39;, &#39; total_amount&#39;],
+      dtype=&#39;object&#39;)
+
+
+
+
+
+&lt;matplotlib.text.Text at 0x112952b38&gt;
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_3_2.png" /></p>
+<p><img alt="png" src="images/ProjectPart_3_3.png" /></p>
+<p><img alt="png" src="images/ProjectPart_3_4.png" /></p>
+<p><img alt="png" src="images/ProjectPart_3_5.png" /></p>
+<div class="highlight"><pre><span></span><span class="c1">#Trying to find address using logitude and latitude</span>
+<span class="n">pickup_locations</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[[</span><span class="s1">&#39; pickup_longitude&#39;</span><span class="p">,</span><span class="s1">&#39; pickup_latitude&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">dropoff_locations</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[[</span><span class="s1">&#39; dropoff_longitude&#39;</span><span class="p">,</span><span class="s1">&#39; dropoff_latitude&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">clean_pickup</span> <span class="o">=</span> <span class="n">pickup_locations</span><span class="p">[(</span><span class="n">pickup_locations</span><span class="p">[</span><span class="s1">&#39; pickup_latitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pickup_locations</span><span class="p">[</span><span class="s1">&#39; pickup_longitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">clean_dropoff</span> <span class="o">=</span> <span class="n">dropoff_locations</span><span class="p">[(</span><span class="n">dropoff_locations</span><span class="p">[</span><span class="s1">&#39; dropoff_latitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">&amp;</span> <span class="p">(</span><span class="n">dropoff_locations</span><span class="p">[</span><span class="s1">&#39; dropoff_longitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">pickup_locations</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="c1">#From this we can see that there are coordinates with (0,0)</span>
+<span class="n">num_nonzero_long</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_longitude&#39;</span><span class="p">])</span>
+<span class="n">num_nonzero_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_latitude&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clean_pickup</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">num_nonzero_long</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">num_nonzero_long</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Index([&#39; pickup_longitude&#39;, &#39; pickup_latitude&#39;], dtype=&#39;object&#39;)
+486
+486
+486
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1">#from sklearn.cluster import KMeans</span>
+<span class="c1">#km = KMeans(3, init=&#39;k-means++&#39;)</span>
+<span class="c1">#km.fit(clean_pickup)</span>
+<span class="c1">#c = km.predict(clean_pickup)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; trip_distance&#39;</span><span class="p">]))</span>
+<span class="n">cab_data</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[</span><span class="n">cab_data</span><span class="p">[</span><span class="s1">&#39; trip_distance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cab_data</span><span class="p">))</span>
+
+<span class="n">cab_data</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>496
+496
+</pre></div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>passenger_count</th>
+      <th>trip_distance</th>
+      <th>pickup_longitude</th>
+      <th>pickup_latitude</th>
+      <th>dropoff_longitude</th>
+      <th>dropoff_latitude</th>
+      <th>fare_amount</th>
+      <th>surcharge</th>
+      <th>tip_amount</th>
+      <th>tolls_amount</th>
+      <th>total_amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>passenger_count</th>
+      <td>1.000000</td>
+      <td>0.007208</td>
+      <td>-0.064719</td>
+      <td>0.064941</td>
+      <td>-0.064840</td>
+      <td>0.064996</td>
+      <td>0.033917</td>
+      <td>-0.032998</td>
+      <td>0.026429</td>
+      <td>0.025874</td>
+      <td>0.034033</td>
+    </tr>
+    <tr>
+      <th>trip_distance</th>
+      <td>0.007208</td>
+      <td>1.000000</td>
+      <td>-0.037750</td>
+      <td>0.037985</td>
+      <td>-0.038334</td>
+      <td>0.037661</td>
+      <td>0.959922</td>
+      <td>-0.323674</td>
+      <td>0.653436</td>
+      <td>0.637439</td>
+      <td>0.949864</td>
+    </tr>
+    <tr>
+      <th>pickup_longitude</th>
+      <td>-0.064719</td>
+      <td>-0.037750</td>
+      <td>1.000000</td>
+      <td>-0.999988</td>
+      <td>0.999993</td>
+      <td>-0.999983</td>
+      <td>-0.032065</td>
+      <td>0.012679</td>
+      <td>-0.023809</td>
+      <td>-0.036761</td>
+      <td>-0.033625</td>
+    </tr>
+    <tr>
+      <th>pickup_latitude</th>
+      <td>0.064941</td>
+      <td>0.037985</td>
+      <td>-0.999988</td>
+      <td>1.000000</td>
+      <td>-0.999987</td>
+      <td>0.999989</td>
+      <td>0.032253</td>
+      <td>-0.012338</td>
+      <td>0.023762</td>
+      <td>0.037347</td>
+      <td>0.033833</td>
+    </tr>
+    <tr>
+      <th>dropoff_longitude</th>
+      <td>-0.064840</td>
+      <td>-0.038334</td>
+      <td>0.999993</td>
+      <td>-0.999987</td>
+      <td>1.000000</td>
+      <td>-0.999983</td>
+      <td>-0.032728</td>
+      <td>0.012864</td>
+      <td>-0.024198</td>
+      <td>-0.037505</td>
+      <td>-0.034298</td>
+    </tr>
+    <tr>
+      <th>dropoff_latitude</th>
+      <td>0.064996</td>
+      <td>0.037661</td>
+      <td>-0.999983</td>
+      <td>0.999989</td>
+      <td>-0.999983</td>
+      <td>1.000000</td>
+      <td>0.031704</td>
+      <td>-0.012559</td>
+      <td>0.023287</td>
+      <td>0.037436</td>
+      <td>0.033307</td>
+    </tr>
+    <tr>
+      <th>fare_amount</th>
+      <td>0.033917</td>
+      <td>0.959922</td>
+      <td>-0.032065</td>
+      <td>0.032253</td>
+      <td>-0.032728</td>
+      <td>0.031704</td>
+      <td>1.000000</td>
+      <td>-0.302448</td>
+      <td>0.658367</td>
+      <td>0.666293</td>
+      <td>0.985827</td>
+    </tr>
+    <tr>
+      <th>surcharge</th>
+      <td>-0.032998</td>
+      <td>-0.323674</td>
+      <td>0.012679</td>
+      <td>-0.012338</td>
+      <td>0.012864</td>
+      <td>-0.012559</td>
+      <td>-0.302448</td>
+      <td>1.000000</td>
+      <td>-0.226890</td>
+      <td>-0.212843</td>
+      <td>-0.284071</td>
+    </tr>
+    <tr>
+      <th>tip_amount</th>
+      <td>0.026429</td>
+      <td>0.653436</td>
+      <td>-0.023809</td>
+      <td>0.023762</td>
+      <td>-0.024198</td>
+      <td>0.023287</td>
+      <td>0.658367</td>
+      <td>-0.226890</td>
+      <td>1.000000</td>
+      <td>0.455844</td>
+      <td>0.760879</td>
+    </tr>
+    <tr>
+      <th>tolls_amount</th>
+      <td>0.025874</td>
+      <td>0.637439</td>
+      <td>-0.036761</td>
+      <td>0.037347</td>
+      <td>-0.037505</td>
+      <td>0.037436</td>
+      <td>0.666293</td>
+      <td>-0.212843</td>
+      <td>0.455844</td>
+      <td>1.000000</td>
+      <td>0.715963</td>
+    </tr>
+    <tr>
+      <th>total_amount</th>
+      <td>0.034033</td>
+      <td>0.949864</td>
+      <td>-0.033625</td>
+      <td>0.033833</td>
+      <td>-0.034298</td>
+      <td>0.033307</td>
+      <td>0.985827</td>
+      <td>-0.284071</td>
+      <td>0.760879</td>
+      <td>0.715963</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_longitude&#39;</span><span class="p">],</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_latitude&#39;</span><span class="p">]);</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_7_0.png" /></p>
+<div class="highlight"><pre><span></span>&lt;matplotlib.figure.Figure at 0x11297dba8&gt;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">Basemap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;merc&#39;</span><span class="p">,</span> <span class="n">llcrnrlat</span><span class="o">=</span><span class="mf">40.65</span><span class="p">,</span> <span class="n">urcrnrlat</span><span class="o">=</span><span class="mf">40.85</span><span class="p">,</span> <span class="n">llcrnrlon</span><span class="o">=-</span><span class="mf">74.25</span><span class="p">,</span> <span class="n">urcrnrlon</span><span class="o">=-</span><span class="mf">73.5</span><span class="p">,</span> <span class="n">resolution</span> <span class="o">=</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">readshapefile</span><span class="p">(</span><span class="s2">&quot;/Users/GCleverly/Documents/GA-DS-15/ZillowNeighborhoods-NY/ZillowNeighborhoods-NY&quot;</span><span class="p">,</span> <span class="s2">&quot;NYC&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(266,
+ 5,
+ [-78.9125492727273, 40.495691577906, 0.0, 0.0],
+ [-73.6998272727273, 43.2675900246194, 0.0, 0.0],
+ &lt;matplotlib.collections.LineCollection at 0x112950898&gt;)
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_8_1.png" /></p>
+<div class="highlight"><pre><span></span><span class="n">shp</span> <span class="o">=</span> <span class="n">fiona</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;/Users/GCleverly/Documents/GA-DS-15/ZillowNeighborhoods-NY/ZillowNeighborhoods-NY.shp&quot;</span><span class="p">)</span>
+<span class="n">bds</span> <span class="o">=</span> <span class="n">shp</span><span class="o">.</span><span class="n">bounds</span>
+<span class="n">shp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">extra</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">ll</span> <span class="o">=</span> <span class="p">(</span><span class="n">bds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ur</span> <span class="o">=</span> <span class="p">(</span><span class="n">bds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bds</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">ur</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">bds</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+<span class="c1">#w, h = coords[2] - coords[0], coords[3] - coords[1]</span>
+<span class="c1">#print(h,w)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(-78.9125492727273, 40.495691577906, -73.6998272727273, 43.2675900246194)
+[-78.9125492727273, 40.495691577906, -73.6998272727273, 43.2675900246194]
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">m1</span> <span class="o">=</span> <span class="n">Basemap</span><span class="p">(</span>
+    <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;tmerc&#39;</span><span class="p">,</span>
+    <span class="n">lon_0</span><span class="o">=-</span><span class="mi">74</span><span class="p">,</span>
+    <span class="n">lat_0</span><span class="o">=</span><span class="mf">40.75</span><span class="p">,</span>
+    <span class="c1">#ellps = &#39;WGS84&#39;,</span>
+    <span class="n">llcrnrlon</span><span class="o">=-</span><span class="mf">74.04</span><span class="p">,</span> <span class="c1">#coords[0], #- extra * w,</span>
+    <span class="n">llcrnrlat</span><span class="o">=</span><span class="mf">40.7</span><span class="p">,</span><span class="c1">#coords[1], #- extra + 0.01 * h,</span>
+    <span class="n">urcrnrlon</span><span class="o">=-</span><span class="mf">73.9</span><span class="p">,</span><span class="c1">#coords[2], #+ extra * w,</span>
+    <span class="n">urcrnrlat</span><span class="o">=</span><span class="mf">40.83</span><span class="p">,</span><span class="c1">#coords[3], #+ extra + 0.01 * h,</span>
+    <span class="n">lat_ts</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+    <span class="n">suppress_ticks</span><span class="o">=</span><span class="bp">True</span><span class="p">);</span>
+<span class="n">m1</span><span class="o">.</span><span class="n">readshapefile</span><span class="p">(</span><span class="s2">&quot;/Users/GCleverly/Documents/GA-DS-15/ZillowNeighborhoods-NY/ZillowNeighborhoods-NY&quot;</span><span class="p">,</span> <span class="s2">&quot;NYC&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>(266,
+ 5,
+ [-78.9125492727273, 40.495691577906, 0.0, 0.0],
+ [-73.6998272727273, 43.2675900246194, 0.0, 0.0],
+ &lt;matplotlib.collections.LineCollection at 0x10bf20e10&gt;)
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_10_1.png" /></p>
+<div class="highlight"><pre><span></span><span class="c1">#print(m1.NYC_info)</span>
+<span class="n">list_city</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">m1</span><span class="o">.</span><span class="n">NYC_info</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;New York City-Manhattan&quot;</span><span class="p">]</span>
+<span class="n">city_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">list_city</span><span class="p">)</span>
+
+<span class="c1">#print(m1.NYC_info)</span>
+
+<span class="n">df_map</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;poly&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">Polygon</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span> <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">m1</span><span class="o">.</span><span class="n">NYC</span><span class="p">],</span>
+    <span class="s1">&#39;city_name&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">city</span><span class="p">[</span><span class="s1">&#39;CITY&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">city</span> <span class="ow">in</span> <span class="n">m1</span><span class="o">.</span><span class="n">NYC_info</span><span class="p">],</span>
+    <span class="s1">&#39;neighborhood&#39;</span><span class="p">:[</span><span class="n">hood</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">hood</span> <span class="ow">in</span> <span class="n">m1</span><span class="o">.</span><span class="n">NYC_info</span><span class="p">]})</span>
+<span class="c1">#df_map[&#39;area_m&#39;] = df_map[&#39;poly&#39;].map(lambda x: x.area)</span>
+<span class="c1">#df_map[&#39;area_km&#39;] = df_map[&#39;area_m&#39;] / 100000</span>
+<span class="c1">#drop_cities = [&quot;Albany&quot;,&quot;Buffalo&quot;,&quot;Syracuse&quot;]</span>
+<span class="n">df_map</span> <span class="o">=</span> <span class="n">df_map</span><span class="p">[</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;city_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;New York City&quot;</span><span class="p">)]</span>
+<span class="k">print</span><span class="p">(</span><span class="n">df_map</span><span class="p">[</span><span class="n">df_map</span><span class="p">[</span><span class="s2">&quot;city_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;New York City-Manhattan&quot;</span><span class="p">)])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>                   city_name         neighborhood  \
+1    New York City-Manhattan         West Village   
+4    New York City-Manhattan         East Village   
+13   New York City-Manhattan         Battery Park   
+16   New York City-Manhattan        Carnegie Hill   
+30   New York City-Manhattan             Gramercy   
+46   New York City-Manhattan                 Soho   
+71   New York City-Manhattan          Murray Hill   
+88   New York City-Manhattan         Little Italy   
+99   New York City-Manhattan         Central Park   
+112  New York City-Manhattan    Greenwich Village   
+114  New York City-Manhattan              Midtown   
+118  New York City-Manhattan  Morningside Heights   
+122  New York City-Manhattan               Harlem   
+136  New York City-Manhattan     Hamilton Heights   
+150  New York City-Manhattan              Tribeca   
+184  New York City-Manhattan    North Sutton Area   
+189  New York City-Manhattan      Upper East Side   
+197  New York City-Manhattan   Financial District   
+202  New York City-Manhattan               Inwood   
+210  New York City-Manhattan              Chelsea   
+213  New York City-Manhattan      Lower East Side   
+224  New York City-Manhattan            Chinatown   
+233  New York City-Manhattan   Washington Heights   
+240  New York City-Manhattan      Upper West Side   
+245  New York City-Manhattan              Clinton   
+251  New York City-Manhattan            Yorkville   
+285  New York City-Manhattan     Garment District   
+286  New York City-Manhattan          East Harlem
+
+                                                  poly  
+1    POLYGON ((2198.902218867855 3320.69318842749, ...  
+4    POLYGON ((4450.045152566122 3743.863652142874,...  
+13   POLYGON ((2330.667661432524 2169.241159487206,...  
+16   POLYGON ((7509.733513069918 9545.777416660043,...  
+30   POLYGON ((4670.231698318657 5401.853446721477,...  
+46   POLYGON ((2472.053909535906 2935.001177595791,...  
+71   POLYGON ((4670.231698318657 5401.853446721477,...  
+88   POLYGON ((3629.853361399193 2534.468128807741,...  
+99   POLYGON ((7396.579767509133 10906.56415895398,...  
+112  POLYGON ((2943.020680037649 3231.858144577078,...  
+114  POLYGON ((3659.066849076051 8192.606779367994,...  
+118  POLYGON ((5808.571207560421 11775.21328707697,...  
+122  POLYGON ((9033.608157467623 11961.15968968496,...  
+136  POLYGON ((7244.054711806729 12368.20891354683,...  
+150  POLYGON ((2273.727029173389 1741.76125949653, ...  
+184  POLYGON ((6373.346858399922 6758.833323888517,...  
+189  POLYGON ((8212.35608579433 8874.132999186542, ...  
+197  POLYGON ((2273.727029173389 1741.76125949653, ...  
+202  POLYGON ((10521.89764513508 19487.54836196547,...  
+210  POLYGON ((2328.76992160338 4838.975675337106, ...  
+213  POLYGON ((5605.393924041886 2140.591326109743,...  
+224  POLYGON ((3130.497918931239 1782.874651626219,...  
+233  POLYGON ((7571.382681259376 14966.36501148622,...  
+240  POLYGON ((6895.092670978767 11184.51671115431,...  
+245  POLYGON ((3585.766903835119 7432.39191665716, ...  
+251  POLYGON ((8227.150055877233 9287.543862532439,...  
+285  POLYGON ((3780.661878788218 5534.929076536154,...  
+286  POLYGON ((9062.076828796917 10341.71971010629,...
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Create Point objects in map coordinates from dataframe lon and lat values</span>
+<span class="n">map_points_pickup</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">m1</span><span class="p">(</span><span class="n">mapped_x</span><span class="p">,</span> <span class="n">mapped_y</span><span class="p">))</span> <span class="k">for</span> <span class="n">mapped_x</span><span class="p">,</span> <span class="n">mapped_y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_longitude&#39;</span><span class="p">],</span><span class="n">clean_pickup</span><span class="p">[</span><span class="s1">&#39; pickup_latitude&#39;</span><span class="p">])])</span>
+<span class="n">pickup_points</span> <span class="o">=</span> <span class="n">MultiPoint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">map_points_pickup</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+<span class="n">map_points_dropoff</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">m1</span><span class="p">(</span><span class="n">mapped_x</span><span class="p">,</span> <span class="n">mapped_y</span><span class="p">))</span> <span class="k">for</span> <span class="n">mapped_x</span><span class="p">,</span> <span class="n">mapped_y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">clean_dropoff</span><span class="p">[</span><span class="s1">&#39; dropoff_longitude&#39;</span><span class="p">],</span><span class="n">clean_dropoff</span><span class="p">[</span><span class="s1">&#39; dropoff_latitude&#39;</span><span class="p">])])</span>
+<span class="n">dropoff_points</span> <span class="o">=</span> <span class="n">MultiPoint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">map_points_dropoff</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+
+<span class="n">borough_polygon</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">MultiPolygon</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;poly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+<span class="c1"># calculate points that fall within the NYC boundary</span>
+<span class="n">ny_points_pickup</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">borough_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">pickup_points</span><span class="p">)</span>
+<span class="n">ny_points_dropoff</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">borough_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">dropoff_points</span><span class="p">)</span>
+<span class="c1">#l = list(ny_points_pickup)</span>
+<span class="c1">#print(len(l))</span>
+
+<span class="n">x_points_pickup</span><span class="p">,</span><span class="n">x_points_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+<span class="n">y_points_pickup</span><span class="p">,</span><span class="n">y_points_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+
+<span class="k">for</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">ny_points_pickup</span><span class="p">:</span>
+    <span class="n">x_points_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pts</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_points_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pts</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">ny_points_dropoff</span><span class="p">:</span>
+    <span class="n">x_points_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_points_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_points_pickup</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_points_pickup</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>462
+462
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">hood_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">hood</span> <span class="ow">in</span> <span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;neighborhood&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">hood</span> <span class="ow">in</span> <span class="n">hood_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">hood_dict</span><span class="p">[</span><span class="n">hood</span><span class="p">]</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">hood_dict</span><span class="p">[</span><span class="n">hood</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">b</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">hood_dict</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">hood_dict</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="c1">#print(hood_dict[&#39;Red Hook&#39;])</span>
+
+<span class="n">df_map_east</span> <span class="o">=</span> <span class="n">df_map</span><span class="p">[</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;neighborhood&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Tribeca&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">df_map_east</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Red Hook
+                   city_name neighborhood  \
+150  New York City-Manhattan      Tribeca
+
+                                                  poly  
+150  POLYGON ((2273.727029173389 1741.76125949653, ...
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1">#find the points for only eastchester</span>
+
+<span class="c1"># Create Point objects for the region we want to examine</span>
+<span class="c1">#list_of_locations = []</span>
+
+<span class="c1">#map_points_pickup = pd.Series(</span>
+ <span class="c1">#   [Point(m1(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(clean_pickup[&#39; pickup_longitude&#39;],clean_pickup[&#39; pickup_latitude&#39;])])</span>
+<span class="c1">#pickup_points = MultiPoint(list(map_points_pickup.values))</span>
+
+<span class="c1">#map_points_dropoff = pd.Series(</span>
+ <span class="c1">#   [Point(m1(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(clean_dropoff[&#39; dropoff_longitude&#39;],clean_dropoff[&#39; dropoff_latitude&#39;])])</span>
+<span class="c1">#dropoff_points = MultiPoint(list(map_points_dropoff.values))</span>
+<span class="n">uptown_areas</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Upper West Side&quot;</span><span class="p">,</span><span class="s2">&quot;Upper East Side&quot;</span><span class="p">,</span><span class="s2">&quot;Harlem&quot;</span><span class="p">,</span><span class="s2">&quot;Morningside Heights&quot;</span><span class="p">]</span>
+<span class="n">df_map_east</span> <span class="o">=</span> <span class="n">df_map</span><span class="p">[</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;neighborhood&#39;</span><span class="p">][</span><span class="n">uptown_areas</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">east_polygon</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">MultiPolygon</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">df_map_east</span><span class="p">[</span><span class="s1">&#39;poly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+
+<span class="n">east_points_pickup</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">east_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">pickup_points</span><span class="p">)</span>
+<span class="n">east_points_dropoff</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">borough_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">dropoff_points</span><span class="p">)</span>
+
+<span class="n">west_points_pickup</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">borough_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">pickup_points</span><span class="p">)</span>
+<span class="n">west_points_dropoff</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">east_polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="n">dropoff_points</span><span class="p">)</span>
+
+<span class="n">x_east_pickup</span><span class="p">,</span><span class="n">x_east_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+<span class="n">y_east_pickup</span><span class="p">,</span><span class="n">y_east_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">east_points_pickup</span><span class="p">:</span>
+    <span class="n">x_east_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_east_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">east_points_dropoff</span><span class="p">:</span>
+    <span class="n">x_east_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_east_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">x_west_pickup</span><span class="p">,</span><span class="n">x_west_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+<span class="n">y_west_pickup</span><span class="p">,</span><span class="n">y_west_dropoff</span> <span class="o">=</span> <span class="p">[],[]</span>
+
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">west_points_pickup</span><span class="p">:</span>
+    <span class="n">x_west_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_west_pickup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">west_points_dropoff</span><span class="p">:</span>
+    <span class="n">x_west_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_west_dropoff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="c1">#print(len(x_east_dropoff),len(x_east_pickup),len(y_east_dropoff),len(y_east_pickup))</span>
+
+<span class="n">lengths_plot</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">x_east_dropoff</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">x_east_pickup</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y_east_dropoff</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y_east_pickup</span><span class="p">)]</span>
+<span class="n">max_length_plot</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">lengths_plot</span><span class="p">)</span>
+
+<span class="n">lengths_plot_b</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">x_west_dropoff</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">x_west_pickup</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y_west_dropoff</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y_west_pickup</span><span class="p">)]</span>
+<span class="n">max_length_plot_b</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">lengths_plot_b</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+
+ValueError                                Traceback (most recent call last)
+
+&lt;ipython-input-118-7b5b06f59db3&gt; in &lt;module&gt;()
+     12 #dropoff_points = MultiPoint(list(map_points_dropoff.values))
+     13 uptown_areas = [&quot;Upper West Side&quot;,&quot;Upper East Side&quot;,&quot;Harlem&quot;,&quot;Morningside Heights&quot;]
+---&gt; 14 df_map_east = df_map[df_map[&#39;neighborhood&#39;][uptown_areas]].copy()
+     15 
+     16 east_polygon = prep(MultiPolygon(list(df_map_east[&#39;poly&#39;].values)))
+
+
+//anaconda/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   1906         if isinstance(key, (Series, np.ndarray, Index, list)):
+   1907             # either boolean or fancy integer index
+-&gt; 1908             return self._getitem_array(key)
+   1909         elif isinstance(key, DataFrame):
+   1910             return self._getitem_frame(key)
+
+
+//anaconda/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_array(self, key)
+   1933     def _getitem_array(self, key):
+   1934         # also raises Exception if object array with NA values
+-&gt; 1935         if com.is_bool_indexer(key):
+   1936             # warning here just in case -- previously __setitem__ was
+   1937             # reindexing but __getitem__ was not; it seems more reasonable to
+
+
+//anaconda/lib/python3.5/site-packages/pandas/core/common.py in is_bool_indexer(key)
+   2073             if not lib.is_bool_array(key):
+   2074                 if isnull(key).any():
+-&gt; 2075                     raise ValueError(&#39;cannot index with vector containing &#39;
+   2076                                      &#39;NA / NaN values&#39;)
+   2077                 return False
+
+
+ValueError: cannot index with vector containing NA / NaN values
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># draw ward patches from polygons</span>
+<span class="c1">#df_map[&#39;patches&#39;] = df_map[&#39;poly&#39;].map(lambda x: PolygonPatch(</span>
+<span class="c1">#    x,</span>
+<span class="c1">#    fc=&#39;#555555&#39;,</span>
+<span class="c1">#    ec=&#39;#787878&#39;, lw=.25, alpha=.9,#label=&quot;New York&quot;,</span>
+<span class="c1">#    zorder=4))</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;poly&#39;</span><span class="p">],</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;neighborhood&#39;</span><span class="p">]):</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PolygonPatch</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">fc</span><span class="o">=</span><span class="s1">&#39;#555555&#39;</span><span class="p">,</span><span class="n">ec</span><span class="o">=</span><span class="s1">&#39;#787878&#39;</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">y</span><span class="p">))</span>
+<span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;patches&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span> 
+
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">axisbg</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">frame_on</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">x_points_pickup</span><span class="p">,</span> <span class="n">y_points_pickup</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=.</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#33ccff&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">antialiased</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cab Pickups&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">x_points_dropoff</span><span class="p">,</span> <span class="n">y_points_dropoff</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=.</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#8ec256&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">antialiased</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cab Pickups&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1">#Plotting trips from West Village</span>
+<span class="n">m1</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">x_east_pickup</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot</span><span class="p">],</span><span class="n">x_east_dropoff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot</span><span class="p">]),(</span><span class="n">y_east_pickup</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot</span><span class="p">],</span><span class="n">y_east_dropoff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">m1</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">x_west_pickup</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot_b</span><span class="p">],</span><span class="n">x_west_dropoff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot_b</span><span class="p">]),(</span><span class="n">y_west_pickup</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot_b</span><span class="p">],</span><span class="n">y_west_dropoff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">max_length_plot_b</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+<span class="c1">#m1.drawgreatcircle(x_points_pickup[0],y_points_pickup[0],x_points_dropoff[0],y_points_dropoff[0], linewidth=1)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">PatchCollection</span><span class="p">(</span><span class="n">df_map</span><span class="p">[</span><span class="s1">&#39;patches&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">match_original</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+
+<span class="c1">#The following is preliminary work to get neighborhood labels on the plot</span>
+<span class="c1">#ax.text(4, 20, &#39;boxed italics text in data coords&#39;, style=&#39;italic&#39;)</span>
+<span class="c1">#for x in df_map[&#39;neighborhood&#39;]:</span>
+<span class="c1">#    ax.annotate(x,xy=(10,300))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&lt;matplotlib.figure.Figure at 0x10f015780&gt;
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_15_1.png" /></p>
+<div class="highlight"><pre><span></span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1">#Now I want to plot the time histogram</span>
+<span class="n">time_df</span> <span class="o">=</span> <span class="n">cab_data</span><span class="p">[[</span><span class="s1">&#39; pickup_datetime&#39;</span><span class="p">,</span><span class="s1">&#39; dropoff_datetime&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">time_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">,</span><span class="s1">&#39;dropoff_datetime&#39;</span><span class="p">]</span>
+
+<span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">]]</span>
+<span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;dropoff_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;dropoff_datetime&#39;</span><span class="p">]]</span>
+
+<span class="n">time_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pickup_datetime</th>
+      <th>dropoff_datetime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2014-01-09 20:45:25</td>
+      <td>2014-01-09 20:52:31</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2014-01-09 20:46:12</td>
+      <td>2014-01-09 20:55:12</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2014-01-09 20:44:47</td>
+      <td>2014-01-09 20:59:46</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2014-01-09 20:44:57</td>
+      <td>2014-01-09 20:51:40</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014-01-09 20:47:09</td>
+      <td>2014-01-09 20:53:32</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">chart_hours</span><span class="p">(</span><span class="n">occurance_list</span><span class="p">):</span>
+    <span class="n">hour_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">hour</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">occurance_list</span><span class="p">]</span>
+    <span class="n">numbers</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">24</span><span class="p">)]</span>
+    <span class="n">labels</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">numbers</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">24</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">hour_list</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">chart_days</span><span class="p">(</span><span class="n">occurance_list</span><span class="p">):</span>
+    <span class="n">days_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">day</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">occurance_list</span><span class="p">]</span>
+    <span class="n">numbers</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">31</span><span class="p">)]</span>
+    <span class="n">labels</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">numbers</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">31</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">days_list</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">chart_hours</span><span class="p">(</span><span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">])</span>
+<span class="n">chart_hours</span><span class="p">(</span><span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">])</span>
+
+<span class="n">chart_days</span><span class="p">(</span><span class="n">time_df</span><span class="p">[</span><span class="s1">&#39;pickup_datetime&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<p><img alt="png" src="images/ProjectPart_18_0.png" /></p>
+<p><img alt="png" src="images/ProjectPart_18_1.png" /></p>
+<p><img alt="png" src="images/ProjectPart_18_2.png" /></p>
+<div class="highlight"><pre><span></span><span class="c1">#Need functionality to change neighborhood via a slider</span>
+<span class="c1">#Need better presentation with the trip path</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>
+</pre></div>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Kobe Shot Predictor</title>
+        <title>Kobe shot predictor</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
         <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="A Pelican Blog Atom Feed" />
 
@@ -23,7 +23,7 @@
     <header>
       <h1 class="entry-title">
         <a href="/kobe-shot-predictor.html" rel="bookmark"
-           title="Permalink to Kobe Shot Predictor">Kobe Shot Predictor</a></h1>
+           title="Permalink to Kobe shot predictor">Kobe shot predictor</a></h1>
     </header>
 
     <div class="entry-content">
@@ -608,7 +608,7 @@ shot_id has 30697  unique data entries over: 30697
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_10_0.png" /></p>
+<p><img alt="png" src="images/Kobe_10_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#It&#39;s clear that Kobe&#39;s shooting has fluctuated over the season. Let&#39;s see within a season what it looks like. </span>
 <span class="c1">#Just for the sample lets look at the year 2000</span>
 </pre></div>
@@ -777,7 +777,7 @@ shot_id has 30697  unique data entries over: 30697
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_13_0.png" /></p>
+<p><img alt="png" src="images/Kobe_13_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#As we can see from the data, there are some nights where Kobe has a really hot hand and others when does poorly</span>
 <span class="c1">#This brings up an interesting thought though, does Kobe consistently shoot a certain way on a monthly basis? </span>
 </pre></div>
@@ -800,7 +800,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_16_0.png" /></p>
+<p><img alt="png" src="images/Kobe_16_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">year_2000</span><span class="p">[</span><span class="s1">&#39;game_month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">year_2000</span><span class="p">[</span><span class="s1">&#39;game_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span>
 </pre></div>
 
@@ -818,7 +818,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_18_0.png" /></p>
+<p><img alt="png" src="images/Kobe_18_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Does this hold true across the dataset?</span>
 </pre></div>
 
@@ -834,12 +834,12 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_21_0.png" /></p>
+<p><img alt="png" src="images/Kobe_21_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">data_complete</span><span class="p">[[</span><span class="s2">&quot;shot_made_flag&quot;</span><span class="p">,</span><span class="s2">&quot;game_day&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;game_day&quot;</span><span class="p">)[</span><span class="s2">&quot;shot_made_flag&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">));</span>
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_22_0.png" /></p>
+<p><img alt="png" src="images/Kobe_22_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Unfortunately when we use the whole dataset the time differences seem to start to disappear, but I think they will stll be important</span>
 </pre></div>
 
@@ -876,9 +876,9 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_26_0.png" /></p>
-<p><img alt="png" src="Kobe_files/Kobe_26_1.png" /></p>
-<p><img alt="png" src="Kobe_files/Kobe_26_2.png" /></p>
+<p><img alt="png" src="images/Kobe_26_0.png" /></p>
+<p><img alt="png" src="images/Kobe_26_1.png" /></p>
+<p><img alt="png" src="images/Kobe_26_2.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Towards the end of his career, it&#39;s apparent Kobe was not shooting as well</span>
 </pre></div>
 
@@ -891,7 +891,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_29_0.png" /></p>
+<p><img alt="png" src="images/Kobe_29_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Let&#39;s see home vs away</span>
 </pre></div>
 
@@ -905,7 +905,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_32_0.png" /></p>
+<p><img alt="png" src="images/Kobe_32_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Kobe shot slightly better at home it appears</span>
 </pre></div>
 
@@ -926,7 +926,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_35_0.png" /></p>
+<p><img alt="png" src="images/Kobe_35_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Let&#39;s go through the location data</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">data_complete</span><span class="p">[</span><span class="s1">&#39;shot_made_flag&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">data_complete</span><span class="o">.</span><span class="n">shot_zone_area</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">);</span>
@@ -937,7 +937,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_36_0.png" /></p>
+<p><img alt="png" src="images/Kobe_36_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#data_complete[&#39;shot_made_flag&#39;].groupby(data_complete.shot_zone_range).mean()</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data_complete</span><span class="p">[</span><span class="s1">&#39;loc_x&#39;</span><span class="p">],</span> <span class="n">data_complete</span><span class="p">[</span><span class="s1">&#39;loc_y&#39;</span><span class="p">],</span> <span class="n">shade</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
@@ -953,7 +953,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_37_1.png" /></p>
+<p><img alt="png" src="images/Kobe_37_1.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">groups</span> <span class="o">=</span> <span class="n">data_complete</span><span class="p">[[</span><span class="s2">&quot;loc_x&quot;</span><span class="p">,</span><span class="s2">&quot;loc_y&quot;</span><span class="p">,</span><span class="s2">&quot;shot_zone_basic&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;shot_zone_basic&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
@@ -966,7 +966,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_38_0.png" /></p>
+<p><img alt="png" src="images/Kobe_38_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">data_complete</span><span class="p">[</span><span class="s1">&#39;shot_made_flag&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">data_complete</span><span class="o">.</span><span class="n">shot_zone_basic</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Zone Shot Basic&quot;</span><span class="p">);</span>
@@ -994,14 +994,14 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_41_0.png" /></p>
+<p><img alt="png" src="images/Kobe_41_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hexbin</span><span class="p">(</span><span class="n">shots_made</span><span class="p">[</span><span class="s1">&#39;loc_x&#39;</span><span class="p">],</span> <span class="n">shots_made</span><span class="p">[</span><span class="s1">&#39;loc_y&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_42_0.png" /></p>
+<p><img alt="png" src="images/Kobe_42_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#Let take a look at the spatial distribution of the check in points</span>
 <span class="n">bins</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
@@ -1014,7 +1014,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_43_0.png" /></p>
+<p><img alt="png" src="images/Kobe_43_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">group_made</span> <span class="o">=</span> <span class="n">shots_made</span><span class="p">[[</span><span class="s2">&quot;loc_x&quot;</span><span class="p">,</span><span class="s2">&quot;loc_y&quot;</span><span class="p">,</span><span class="s2">&quot;shot_zone_range&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;shot_zone_range&#39;</span><span class="p">)</span>
 <span class="n">group_missed</span> <span class="o">=</span> <span class="n">shots_missed</span><span class="p">[[</span><span class="s2">&quot;loc_x&quot;</span><span class="p">,</span><span class="s2">&quot;loc_y&quot;</span><span class="p">,</span><span class="s2">&quot;shot_zone_range&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;shot_zone_range&#39;</span><span class="p">)</span>
 
@@ -1028,7 +1028,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_44_0.png" /></p>
+<p><img alt="png" src="images/Kobe_44_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">data_complete</span><span class="p">[</span><span class="s1">&#39;shot_made_flag&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">data_complete</span><span class="o">.</span><span class="n">shot_zone_range</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Zone Shot Range&quot;</span><span class="p">);</span>
@@ -1038,7 +1038,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_45_0.png" /></p>
+<p><img alt="png" src="images/Kobe_45_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">data_complete</span><span class="p">[[</span><span class="s1">&#39;shot_distance&#39;</span><span class="p">,</span><span class="s1">&#39;shot_zone_range&#39;</span><span class="p">]])</span>
 </pre></div>
 
@@ -1120,7 +1120,7 @@ See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stabl
 </pre></div>
 
 
-<p><img alt="png" src="Kobe_files/Kobe_47_0.png" /></p>
+<p><img alt="png" src="images/Kobe_47_0.png" /></p>
 <div class="highlight"><pre><span></span><span class="c1">#There seems to be a cutoff distance wise once the shot is past 45 feet</span>
 </pre></div>
 
