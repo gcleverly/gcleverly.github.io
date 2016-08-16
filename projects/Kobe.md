@@ -1,4 +1,6 @@
-
+Title: Kobe Shot Predictor
+Date: 2016-08-15
+Category: Machine Learning
 
 ```python
 %reset
